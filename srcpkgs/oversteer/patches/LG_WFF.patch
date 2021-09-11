@@ -1,0 +1,57 @@
+diff --git a/data/udev/99-logitech-wheel-perms.rules b/data/udev/99-logitech-wheel-perms.rules
+index 7fbbe4c..a238c54 100644
+--- a/data/udev/99-logitech-wheel-perms.rules
++++ b/data/udev/99-logitech-wheel-perms.rules
+@@ -39,6 +39,9 @@ SUBSYSTEMS=="hid", KERNELS=="0003:046D:CA03.????", DRIVERS=="logitech", RUN+="/b
+ 
+ # Logitech WingMan Formula Force GP USB
+ SUBSYSTEMS=="hid", KERNELS=="0003:046D:C293.????", DRIVERS=="logitech", RUN+="/bin/sh -c 'cd %S%p/../../../; chmod 666 combine_pedals range gain autocenter spring_level damper_level friction_level ffb_leds peak_ffb_level'"
++#
++# Logitech WingMan Formula Force
++SUBSYSTEMS=="hid", KERNELS=="0003:046D:C291.????", DRIVERS=="logitech", RUN+="/bin/sh -c 'cd %S%p/../../../; chmod 666 combine_pedals range gain autocenter spring_level damper_level friction_level ffb_leds peak_ffb_level'"
+ 
+ # Logitech Racing Wheel USB
+ SUBSYSTEMS=="hid", KERNELS=="0003:046D:CA04.????", DRIVERS=="logitech", RUN+="/bin/sh -c 'cd %S%p/../../../; chmod 666 combine_pedals range'"diff --git a/oversteer/device.py b/oversteer/device.py
+index a18e2cb..3e89a4e 100644
+--- a/oversteer/device.py
++++ b/oversteer/device.py
+@@ -387,13 +387,13 @@ class Device:
+             if self.vendor_id == wid.VENDOR_FANATEC and event.code in [ecodes.ABS_Y, ecodes.ABS_Z, ecodes.ABS_RZ]:
+                 event.value = int(event.value / 257)
+             if event.code == ecodes.ABS_X:
+-                if self.usb_id in [wid.LG_WFG, wid.LG_WFFG]:
++                if self.usb_id in [wid.LG_WFG, wid.LG_WFFG, wid.LG_WFF]:
+                     event.value = event.value * 64
+                 elif self.usb_id in [wid.LG_SFW, wid.LG_MOMO, wid.LG_MOMO2, wid.LG_DF, wid.LG_DFP, wid.LG_DFGT, wid.LG_G25, wid.LG_G27]:
+                     event.value = event.value * 4
+                 elif self.usb_id in [wid.TM_T150]:
+                     event.value = event.value * 16
+-            elif self.usb_id in [wid.LG_WFG, wid.LG_WFFG, wid.LG_SFW, wid.LG_MOMO, wid.LG_MOMO2, wid.LG_DF, wid.LG_DFP,
++            elif self.usb_id in [wid.LG_WFG, wid.LG_WFFG, wid.LG_WFF, wid.LG_SFW, wid.LG_MOMO, wid.LG_MOMO2, wid.LG_DF, wid.LG_DFP,
+                     wid.LG_DFGT, wid.LG_G920, wid.TM_T150]:
+                 if event.code == ecodes.ABS_Y:
+                     event.code = ecodes.ABS_Z
+diff --git a/oversteer/device_manager.py b/oversteer/device_manager.py
+index bcb763a..33c84e7 100644
+--- a/oversteer/device_manager.py
++++ b/oversteer/device_manager.py
+@@ -23,6 +23,7 @@ class DeviceManager:
+             wid.LG_MOMO2: 270,
+             wid.LG_WFG: 180,
+             wid.LG_WFFG: 180,
++            wid.LG_WFF: 180,
+             wid.TM_T150: 1080,
+             wid.TM_T248: 900,
+             wid.TM_T300RS: 1080,
+diff --git a/oversteer/wheel_ids.py b/oversteer/wheel_ids.py
+index d3f72b0..08fdfe2 100644
+--- a/oversteer/wheel_ids.py
++++ b/oversteer/wheel_ids.py
+@@ -16,6 +16,7 @@ LG_SFW = '046d:c29c'
+ LG_MOMO2 = '046d:ca03'
+ LG_WFG = '046d:c20e'
+ LG_WFFG = '046d:c293'
++LG_WFF = '046d:c291'
+ TM_T150 = '044f:b677'
+ TM_T248 = '044f:b696'
+ TM_T300RS = '044f:b66e'

@@ -1,0 +1,16 @@
+# Template file for 'oversteer'
+pkgname=oversteer
+version=0.7.2
+revision=1
+build_style=meson
+hostmakedepends="pkg-config"
+_common_deps="python3 python3-gobject python3-pyudev python3-xdg python3-evdev
+ gettext appstream-glib desktop-file-utils python3-matplotlib python3-scipy"
+makedepends="python3-distutils-extra eudev-libudev-devel ${_common_deps}"
+depends="${_common_deps}"
+short_desc="Steering Wheel Manager for Linux"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/berarma/oversteer"
+distfiles="https://github.com/berarma/oversteer/archive/refs/tags/${version}.tar.gz"
+checksum=7d8e497224bdb465bd60355d4c58b8a6c93a7e8ed53e6d5e54f159281e7f7a78
