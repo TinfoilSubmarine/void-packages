@@ -1,0 +1,56 @@
+From 1269669e9d73e5b802f2e2e854a2e08afbabfca6 Mon Sep 17 00:00:00 2001
+From: "James C. Owens" <jamesowens@optonline.net>
+Date: Mon, 4 Mar 2024 16:30:01 -0500
+Subject: [PATCH] Adjust Fraction class addition overload overflow tests
+
+---
+ src/test/util_tests.cpp | 8 ++++----
+ src/util.h              | 9 ++++++++-
+ 2 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/src/test/util_tests.cpp b/src/test/util_tests.cpp
+index 8f8bd204f2..5ccb4fc05e 100755
+--- a/src/test/util_tests.cpp
++++ b/src/test/util_tests.cpp
+@@ -1648,8 +1648,8 @@ BOOST_AUTO_TEST_CASE(util_Fraction_addition_overflow_2)
+ 
+ BOOST_AUTO_TEST_CASE(util_Fraction_addition_overflow_3)
+ {
+-    Fraction lhs(-(std::numeric_limits<int64_t>::max() / 2 + 1), 1);
+-    Fraction rhs(-(std::numeric_limits<int64_t>::max() / 2 + 1), 1);
++    Fraction lhs(std::numeric_limits<int64_t>::min() / 2 + 1, 1);
++    Fraction rhs(std::numeric_limits<int64_t>::min() / 2, 1);
+ 
+     std::string err;
+ 
+@@ -1664,8 +1664,8 @@ BOOST_AUTO_TEST_CASE(util_Fraction_addition_overflow_3)
+ 
+ BOOST_AUTO_TEST_CASE(util_Fraction_addition_overflow_4)
+ {
+-    Fraction lhs(-(std::numeric_limits<int64_t>::max() / 2 + 1), 1);
+-    Fraction rhs(-(std::numeric_limits<int64_t>::max() / 2 + 2), 1);
++    Fraction lhs(std::numeric_limits<int64_t>::min() / 2, 1);
++    Fraction rhs(std::numeric_limits<int64_t>::min() / 2, 1);
+ 
+     std::string err;
+ 
+diff --git a/src/util.h b/src/util.h
+index 511c828155..b51db0661f 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -684,7 +684,14 @@ class Fraction {
+ 
+         if (a < 0 && b < 0) {
+             // Remember b is negative here, so the difference below is GREATER than std::numeric_limits<int64_t>::min().
+-            if (a >= std::numeric_limits<int64_t>::min() - b) {
++            //
++            // The reason for the + 1 below is that the first case handled in the addition overflow operator method above,
++            // the fraction addition with a common denominator, also specifies simplification of the resultant fraction.
++            // This will call std::gcd on the numerator and denominator, which then calls std::abs. If std::abs is called on
++            // std::numeric_limits<int64_t>::min(), and -D_GLIBCXX_ASSERTIONS is set, then the program will abort on a glibc
++            // assertion, because the abs will overflow. To prevent this, we increase (make less negative) by 1, which will
++            // ensure the call to std::abs will succeed at the extreme case.
++            if (a >= std::numeric_limits<int64_t>::min() + 1 - b) {
+                 return a + b;
+             } else {
+                 throw std::overflow_error("fraction addition of a + b where a < 0 and b < 0 results in an overflow");
