@@ -1,0 +1,13 @@
+diff --git a/rel/files/bin/pleroma_ctl b/rel/files/bin/pleroma_ctl
+index 87c4865..0b44532 100755
+--- a/rel/files/bin/pleroma_ctl
++++ b/rel/files/bin/pleroma_ctl
+@@ -1,6 +1,8 @@
+ #!/bin/sh
+ # XXX: This should be removed when elixir's releases get custom command support
+ 
++cd /usr/lib/rebased
++
+ detect_flavour() {
+ 	arch="$(uname -m)"
+ 	if [ "$arch" = "x86_64" ]; then

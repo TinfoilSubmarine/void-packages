@@ -1,0 +1,96 @@
+From 57eef6d76492e772f83acba2402d50ecb6a69f6b Mon Sep 17 00:00:00 2001
+From: ilja <git@ilja.space>
+Date: Sun, 8 Jan 2023 18:22:53 +0100
+Subject: [PATCH 6/6] prune_objects can prune orphaned activities who reference
+ an array of objects
+
+E.g. Flag activities have an array of objects
+
+We prune the activity when NONE of the objects can be found
+
+Note that the cost of finding and deleting these is ~4x higher than finding and deleting the non-array ones
+
+Only string:
+Delete on activities  (cost=506573.48..506580.38 rows=0 width=0)
+
+Only Array:
+Delete on activities  (cost=3570359.68..4276365.34 rows=0 width=0)
+
+(They are still executed separately, so the total cost is the sum of the two)
+---
+ lib/mix/tasks/pleroma/database.ex | 47 ++++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 17 deletions(-)
+
+diff --git a/lib/mix/tasks/pleroma/database.ex b/lib/mix/tasks/pleroma/database.ex
+index 0f428ca03..726a22d41 100644
+--- a/lib/mix/tasks/pleroma/database.ex
++++ b/lib/mix/tasks/pleroma/database.ex
+@@ -172,35 +172,48 @@ def run(["prune_objects" | args]) do
+     |> Repo.delete_all(timeout: :infinity)
+ 
+     if Keyword.get(options, :prune_orphaned_activities) do
++      # Prune activities who link to a single object
+       """
+       delete from public.activities
+       where id in (
+-      select a.id from public.activities a 
+-      left join public.objects o on a.data ->> 'object' = o.data ->> 'id'
+-      left join public.activities a2 on a.data ->> 'object' = a2.data ->> 'id'
+-      left join public.users u  on a.data ->> 'object' = u.ap_id
+-      -- Only clean up remote activities
+-      where not a.local
+-      -- For now we only focus on activities with direct links to objects
+-      --     e.g. not json objects (in case of embedded objects) or json arrays (in case of multiple objects)
+-      and jsonb_typeof(a."data" -> 'object') = 'string'
+-      -- Find Activities that don't have existing objects
+-      and o.id is null 
+-      and a2.id is null
+-      and u.id is null
++        select a.id from public.activities a
++        left join public.objects o on a.data ->> 'object' = o.data ->> 'id'
++        left join public.activities a2 on a.data ->> 'object' = a2.data ->> 'id'
++        left join public.users u  on a.data ->> 'object' = u.ap_id
++        where not a.local
++        and jsonb_typeof(a."data" -> 'object') = 'string'
++        and o.id is null
++        and a2.id is null
++        and u.id is null
+       )
+       """
+-      |> Repo.query()
++      |> Repo.query([], timeout: :infinity)
++
++      # Prune activities who link to an array of objects
++      """
++      delete from public.activities
++      where id in (
++        select a.id from public.activities a
++        join json_array_elements_text((a."data" -> 'object')::json) as j on jsonb_typeof(a."data" -> 'object') = 'array'
++        left join public.objects o on j.value = o.data ->> 'id'
++        left join public.activities a2 on j.value = a2.data ->> 'id'
++        left join public.users u  on j.value = u.ap_id
++        group by a.id
++        having max(o.data ->> 'id') is null
++        and max(a2.data ->> 'id') is null
++        and max(u.ap_id) is null
++      )
++      """
++      |> Repo.query([], timeout: :infinity)
+     end
+ 
+-    prune_hashtags_query = """
++    """
+     DELETE FROM hashtags AS ht
+     WHERE NOT EXISTS (
+       SELECT 1 FROM hashtags_objects hto
+       WHERE ht.id = hto.hashtag_id)
+     """
+-
+-    Repo.query(prune_hashtags_query)
++    |> Repo.query()
+ 
+     if Keyword.get(options, :vacuum) do
+       Maintenance.vacuum("full")
+-- 
+2.40.0
+

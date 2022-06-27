@@ -1,0 +1,27 @@
+From 07a48b9293e4046c50b5d424d60a1bf16c7cc198 Mon Sep 17 00:00:00 2001
+From: floatingghost <hannah@coffee-and-dreams.uk>
+Date: Wed, 14 Dec 2022 12:38:48 +0000
+Subject: [PATCH 3/6] giant massive dep upgrade and dialyxir-found error
+ emporium (#371)
+
+Co-authored-by: FloatingGhost <hannah@coffee-and-dreams.uk>
+Reviewed-on: https://akkoma.dev/AkkomaGang/akkoma/pulls/371
+---
+ lib/mix/tasks/pleroma/database.ex | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/lib/mix/tasks/pleroma/database.ex b/lib/mix/tasks/pleroma/database.ex
+index 0881974ee..272c9e3e5 100644
+--- a/lib/mix/tasks/pleroma/database.ex
++++ b/lib/mix/tasks/pleroma/database.ex
+@@ -115,7 +115,6 @@ def run(["prune_task"]) do
+ 
+     nil
+     |> Pleroma.Workers.Cron.PruneDatabaseWorker.perform()
+-    |> IO.inspect()
+   end
+ 
+   def run(["fix_likes_collections"]) do
+-- 
+2.40.0
+

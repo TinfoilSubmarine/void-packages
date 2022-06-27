@@ -1,0 +1,33 @@
+From db60640c5b91cd1ce2756565835673fa57afe082 Mon Sep 17 00:00:00 2001
+From: floatingghost <hannah@coffee-and-dreams.uk>
+Date: Thu, 1 Dec 2022 15:00:53 +0000
+Subject: [PATCH 2/6] Fixing up deletes a bit (#327)
+
+Co-authored-by: FloatingGhost <hannah@coffee-and-dreams.uk>
+Reviewed-on: https://akkoma.dev/AkkomaGang/akkoma/pulls/327
+---
+ lib/mix/tasks/pleroma/database.ex | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/lib/mix/tasks/pleroma/database.ex b/lib/mix/tasks/pleroma/database.ex
+index 99897e83e..0881974ee 100644
+--- a/lib/mix/tasks/pleroma/database.ex
++++ b/lib/mix/tasks/pleroma/database.ex
+@@ -110,6 +110,14 @@ def run(["prune_objects" | args]) do
+     end
+   end
+ 
++  def run(["prune_task"]) do
++    start_pleroma()
++
++    nil
++    |> Pleroma.Workers.Cron.PruneDatabaseWorker.perform()
++    |> IO.inspect()
++  end
++
+   def run(["fix_likes_collections"]) do
+     start_pleroma()
+ 
+-- 
+2.40.0
+

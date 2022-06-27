@@ -1,0 +1,6 @@
+#!/bin/sh
+exec 2>&1
+[ -r ./conf ] && . ./conf
+export PLEROMA_CONFIG_PATH=${PLEROMA_CONFIG_PATH:-/etc/rebased/config.exs}
+chpst -u _rebased:_rebased rebased_ctl migrate
+exec chpst -u _rebased:_rebased rebased start

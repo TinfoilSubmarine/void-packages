@@ -1,0 +1,79 @@
+From a7ec6e039cdc9ca5a0cc744fbd51511c5ede9f29 Mon Sep 17 00:00:00 2001
+From: ilja <git@ilja.space>
+Date: Sat, 7 Jan 2023 20:52:02 +0100
+Subject: [PATCH 5/6] prune_objects can prune orphaned activities
+
+We add an option to also prune remote activities who don't have existing objects any more they reference.
+Rn, we only check for activities who only reference one object, not an array or embeded object.
+---
+ lib/mix/tasks/pleroma/database.ex | 40 ++++++++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/lib/mix/tasks/pleroma/database.ex b/lib/mix/tasks/pleroma/database.ex
+index be59e2271..0f428ca03 100644
+--- a/lib/mix/tasks/pleroma/database.ex
++++ b/lib/mix/tasks/pleroma/database.ex
+@@ -69,7 +69,8 @@ def run(["prune_objects" | args]) do
+         strict: [
+           vacuum: :boolean,
+           keep_threads: :boolean,
+-          keep_non_public: :boolean
++          keep_non_public: :boolean,
++          prune_orphaned_activities: :boolean
+         ]
+       )
+ 
+@@ -94,6 +95,21 @@ def run(["prune_objects" | args]) do
+         log_message
+       end
+ 
++    log_message =
++      if Keyword.get(options, :prune_orphaned_activities) do
++        log_message <> ", pruning orphaned activities"
++      else
++        log_message
++      end
++
++    log_message =
++      if Keyword.get(options, :vacuum) do
++        log_message <>
++          ", doing a full vacuum (you shouldn't do this as a recurring maintanance task)"
++      else
++        log_message
++      end
++
+     Logger.info(log_message)
+ 
+     if Keyword.get(options, :keep_threads) do
+@@ -155,6 +171,28 @@ def run(["prune_objects" | args]) do
+     end
+     |> Repo.delete_all(timeout: :infinity)
+ 
++    if Keyword.get(options, :prune_orphaned_activities) do
++      """
++      delete from public.activities
++      where id in (
++      select a.id from public.activities a 
++      left join public.objects o on a.data ->> 'object' = o.data ->> 'id'
++      left join public.activities a2 on a.data ->> 'object' = a2.data ->> 'id'
++      left join public.users u  on a.data ->> 'object' = u.ap_id
++      -- Only clean up remote activities
++      where not a.local
++      -- For now we only focus on activities with direct links to objects
++      --     e.g. not json objects (in case of embedded objects) or json arrays (in case of multiple objects)
++      and jsonb_typeof(a."data" -> 'object') = 'string'
++      -- Find Activities that don't have existing objects
++      and o.id is null 
++      and a2.id is null
++      and u.id is null
++      )
++      """
++      |> Repo.query()
++    end
++
+     prune_hashtags_query = """
+     DELETE FROM hashtags AS ht
+     WHERE NOT EXISTS (
+-- 
+2.40.0
+

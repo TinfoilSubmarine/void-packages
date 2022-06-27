@@ -1,0 +1,74 @@
+# Template file for 'rebased'
+pkgname=rebased
+version=3.0.0
+revision=5
+_commit=1d941583b2b8ee1f8edf31f3272218cb5ccfd326
+hostmakedepends="cmake elixir rebar3 git"
+makedepends="file-devel erlang"
+depends="ImageMagick"
+short_desc="Social networking software compatible with other Fediverse software"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-only,CC-BY-4.0,CC-BY-SA-4.0,custom:Unsplash"
+homepage="https://soapbox.pub/"
+distfiles="https://gitlab.com/soapbox-pub/rebased/-/archive/${_commit}/rebased-${_commit}.tar.gz"
+checksum=23fdda8120b633f7625eae2b892eae55dc37bc454340385f00429e8fdbc0fafb
+system_accounts="_rebased"
+_rebased_homedir="/var/lib/rebased"
+make_dirs="/var/lib/rebased 0700 _rebased _rebased
+ /etc/rebased 0755 _rebased _rebased
+ /etc/rebased/static 0755 _rebased _rebased"
+
+export MIX_ENV=prod
+export MIX_REBAR3=/usr/bin/rebar3
+
+if [ "$CROSS_BUILD" ]; then
+	# fixes linking syslog dependency
+	LDFLAGS+=" -L${XBPS_CROSS_BASE}/usr/lib/erlang/usr/lib"
+fi
+
+post_extract() {
+	mix local.hex --force
+	mix deps.get --only prod
+}
+
+do_configure() {
+	if [ "$CROSS_BUILD" ]; then
+		# fixes building fast_html
+		_erts_path="$(cd ${XBPS_CROSS_BASE}/usr/lib/erlang/erts-* && pwd)"
+		vsed -i "s,ERLANG_PATH =.*,ERLANG_PATH = ${_erts_path}," deps/fast_html/Makefile
+		# additional adjustment to include target erts instead of host erts
+		vsed -i "s,include_erts: \"/usr,include_erts: \"${XBPS_CROSS_BASE}," mix.exs
+	fi
+}
+
+do_build() {
+	# without the DEBUG flag, mix gives unhelpful errors for diagnosing c library
+	# issues
+	DEBUG=1 mix release
+}
+
+do_install() {
+	vlicense COPYING
+	vlicense AGPL-3
+
+	cd _build/prod/rel/pleroma
+	vmkdir usr/lib/rebased
+	vcopy erts-* usr/lib/rebased
+	vcopy lib usr/lib/rebased
+	# the Erlang Distribution cookie needs to be unique to each installation
+	rm -f releases/COOKIE
+	vcopy releases usr/lib/rebased
+	ln -sf /etc/rebased/COOKIE ${DESTDIR}/usr/lib/rebased/releases
+
+	# make entrypoint look in standard location instead of cwd
+	vsed -i 's,^RELEASE_ROOT=.*,RELEASE_ROOT="/usr/lib/rebased",' bin/pleroma
+	vcopy bin usr/lib/rebased
+
+	vmkdir usr/bin
+	ln -sf /usr/lib/rebased/bin/pleroma ${DESTDIR}/usr/bin/rebased
+	ln -sf /usr/lib/rebased/bin/pleroma_ctl ${DESTDIR}/usr/bin/rebased_ctl
+
+	vsconf installation/pleroma.nginx rebased.nginx
+
+	vsv rebased
+}
