@@ -1,0 +1,22 @@
+# Template file for 'LegacyFox'
+pkgname=LegacyFox
+version=5.0
+revision=1
+_version_commit=0548b59
+wrksrc="LegacyFox-v${version}-${_version_commit}"
+build_style=gnu-makefile
+hostmakedepends="tar"
+short_desc="Monkeypatching Firefox Quantum to run VimFx"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MPL-2.0"
+homepage="https://git.gir.st/LegacyFox.git"
+distfiles="https://git.gir.st/LegacyFox.git/snapshot/v${version}.tar.gz"
+checksum=bde9fe55e6ba270f2f929e52373f870a9b5e68cdbb693853e8cdf2b86f1a5eae
+
+post_patch() {
+	vsed -i 's,DESTDIR),DESTDIR)/usr/lib/firefox/,g' Makefile
+}
+
+pre_install() {
+	mkdir -p "${DESTDIR}/usr/lib/firefox"
+}
