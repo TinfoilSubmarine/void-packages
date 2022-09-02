@@ -1,0 +1,46 @@
+# Template file for 'firefly-iii'
+pkgname=firefly-iii
+version=6.1.24
+revision=1
+conf_files="/etc/webapps/firefly-iii/firefly-iii.conf"
+depends="php8.3 php8.3-intl php8.3-sodium php8.3-gd"
+short_desc="Web-based personal finances manager"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-or-later"
+homepage="https://github.com/firefly-iii/firefly-iii"
+changelog="https://raw.githubusercontent.com/firefly-iii/firefly-iii/main/changelog.md"
+distfiles="https://github.com/firefly-iii/firefly-iii/releases/download/v${version}/FireflyIII-v${version}.tar.gz"
+checksum=6533e858c8bd96c1910482768062478d7b87d674a4b22fa8b733beec423d8401
+make_dirs="/var/lib/firefly-iii/storage 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/app/public 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/build 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/database 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/debugbar 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/export 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/framework/cache/data 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/framework/sessions 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/framework/testing 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/framework/views 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/framework/views/v1 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/logs 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii/storage/upload 0750 _phpfpm _phpfpm
+ /var/cache/firefly-iii 0750 _phpfpm _phpfpm"
+
+do_install() {
+	rm -rf storage
+	vmkdir usr/share/webapps/firefly-iii
+	vcopy . usr/share/webapps/firefly-iii
+
+	vsconf .env.example firefly-iii.conf
+	vsconf nginx_app.conf
+
+	vinstall .env.example 644 /etc/webapps/firefly-iii firefly-iii.conf
+	ln -s /etc/webapps/firefly-iii/firefly-iii.conf "${DESTDIR}"/usr/share/webapps/firefly-iii/.env
+
+	ln -s /var/lib/firefly-iii/storage "${DESTDIR}"/usr/share/webapps/firefly-iii
+
+	rm -rf "${DESTDIR}"/usr/share/webapps/firefly-iii/bootstrap/cache
+	ln -s /var/cache/firefly-iii "${DESTDIR}"/usr/share/webapps/firefly-iii/bootstrap/cache
+
+	vlicense LICENSE
+}
