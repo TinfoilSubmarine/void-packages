@@ -1,0 +1,10 @@
+case "$ACTION" in
+post)
+	cd /usr/share/webapps/firefly-iii
+	chpst -u _phpfpm:_phpfpm php artisan migrate --seed
+	chpst -u _phpfpm:_phpfpm php artisan cache:clear
+	chpst -u _phpfpm:_phpfpm php artisan view:clear
+	chpst -u _phpfpm:_phpfpm php artisan firefly-iii:upgrade-database
+	chpst -u _phpfpm:_phpfpm php artisan firefly-iii:laravel-passport-keys
+	;;
+esac
