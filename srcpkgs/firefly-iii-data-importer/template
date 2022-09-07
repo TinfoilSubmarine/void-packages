@@ -1,0 +1,48 @@
+# Template file for 'firefly-iii-data-importer'
+pkgname=firefly-iii-data-importer
+version=1.5.7
+revision=1
+wrksrc="data-importer-${version}"
+conf_files="/etc/webapps/firefly-iii-data-importer/data-importer.conf"
+depends="php8.3"
+short_desc="Can import data into Firefly III"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-or-later"
+homepage="https://github.com/firefly-iii/data-importer"
+changelog="https://raw.githubusercontent.com/firefly-iii/data-importer/main/changelog.md"
+distfiles="https://github.com/firefly-iii/data-importer/releases/download/v${version}/DataImporter-v${version}.tar.gz"
+checksum=9d73dd38c1d941981e6140ebb034a9f66543e08bce196f1659f7a01c46e38b81
+make_dirs="/var/lib/firefly-iii-data-importer/storage/app/public 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/configurations 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/conversion-routines 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/debugbar 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/framework/cache/data 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/framework/sessions 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/framework/testing 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/framework/views 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/jobs 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/logs 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/submission-routines 0750 _phpfpm _phpfpm
+ /var/lib/firefly-iii-data-importer/storage/uploads 0750 _phpfpm _phpfpm
+ /var/cache/firefly-iii-data-importer 0750 _phpfpm _phpfpm"
+
+do_install() {
+	rm -rf storage
+	vmkdir usr/share/webapps/firefly-iii-data-importer
+	vcopy . usr/share/webapps/firefly-iii-data-importer
+
+	vsconf .env.example data-importer.conf
+
+	vinstall .env.example 644 /etc/webapps/firefly-iii-data-importer data-importer.conf
+	ln -s /etc/webapps/firefly-iii-data-importer/data-importer.conf \
+	 "${DESTDIR}"/usr/share/webapps/firefly-iii-data-importer/.env
+
+	ln -s /var/lib/firefly-iii-data-importer/storage \
+	 "${DESTDIR}"/usr/share/webapps/firefly-iii-data-importer
+
+	rm -rf "${DESTDIR}"/usr/share/webapps/firefly-iii-data-importer/bootstrap/cache
+	ln -s /var/cache/firefly-iii-data-importer \
+	 "${DESTDIR}"/usr/share/webapps/firefly-iii-data-importer/bootstrap/cache
+
+	vlicense LICENSE
+}
