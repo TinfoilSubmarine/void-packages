@@ -1,0 +1,7 @@
+case "$ACTION" in
+post)
+	cd /usr/share/webapps/firefly-iii-data-importer
+	chpst -u _phpfpm:_phpfpm php artisan cache:clear
+	chpst -u _phpfpm:_phpfpm php artisan view:clear
+	;;
+esac
