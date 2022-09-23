@@ -1,0 +1,42 @@
+# Template file for 'nextcloud'
+pkgname=nextcloud
+version=30.0.0
+revision=1
+wrksrc="nextcloud"
+depends="php8.3 php8.3-gd"
+short_desc="Industry-leading, on-premises content collaboration platform"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-or-later"
+homepage="https://nextcloud.com"
+changelog="https://nextcloud.com/changelog/"
+distfiles="https://download.nextcloud.com/server/releases/nextcloud-${version}.tar.bz2"
+checksum=18d7a80957bb53e94fb04492f6b5213434dda3e9da12d9f789997687c8564e60
+
+conf_files="/etc/webapps/nextcloud/.htaccess
+ /etc/webapps/nextcloud/config/CAN_INSTALL
+ /etc/webapps/nextcloud/config/config.php
+ /etc/webapps/nextcloud/config/.htaccess"
+make_dirs="/var/lib/nextcloud/data 0700 _phpfpm _phpfpm
+ /var/lib/nextcloud/apps 0755 _phpfpm _phpfpm
+ /etc/webapps/nextcloud 0755 _phpfpm _phpfpm
+ /etc/webapps/nextcloud/config 0755 _phpfpm _phpfpm"
+
+do_install() {
+	vinstall "${FILESDIR}"/config.php 644 etc/webapps/nextcloud/config
+	vinstall config/CAN_INSTALL 644 etc/webapps/nextcloud/config
+	vinstall config/.htaccess 644 etc/webapps/nextcloud/config
+	vsconf config/config.sample.php
+	rm -rf config
+
+	vinstall .htaccess 644 etc/webapps/nextcloud
+	rm -f .htaccess
+
+	vmkdir usr/share/webapps/${pkgname}
+	vcopy . usr/share/webapps/${pkgname}
+
+	ln -sf /etc/webapps/nextcloud/config "${DESTDIR}"/usr/share/webapps/nextcloud
+	ln -sf /etc/webapps/nextcloud/.htaccess "${DESTDIR}"/usr/share/webapps/nextcloud
+	ln -sf /var/lib/nextcloud/apps "${DESTDIR}"/usr/share/webapps/nextcloud/wapps
+
+	vlicense COPYING
+}
