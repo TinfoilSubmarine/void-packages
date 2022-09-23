@@ -1,0 +1,6 @@
+case "${ACTION}" in
+post)
+	chown -R _phpfpm:_phpfpm etc/webapps/nextcloud
+	chpst -u _phpfpm:_phpfpm php /usr/share/webapps/nextcloud/occ upgrade
+	;;
+esac
