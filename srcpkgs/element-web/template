@@ -1,0 +1,21 @@
+# Template file for 'element-web'
+pkgname=element-web
+version=1.11.70
+revision=1
+wrksrc="element-v${version}"
+conf_files="/etc/webapps/element/config.json"
+short_desc="Glossy Matrix collaboration client - web version"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="Apache-2.0"
+homepage="https://element.io"
+changelog="https://raw.githubusercontent.com/vector-im/element-web/develop/CHANGELOG.md"
+distfiles="https://github.com/vector-im/element-web/releases/download/v${version}/element-v${version}.tar.gz"
+checksum=ab5fa83233b79a6baa5fea3592169d8476c779c48eb71a1f6bd7c4111f39f55e
+
+do_install() {
+	vmkdir usr/share/webapps/element
+	vcopy . /usr/share/webapps/element
+	vsconf config.sample.json
+	vinstall config.sample.json 644 /etc/webapps/element/ config.json
+	ln -s /etc/webapps/element/config.json "${DESTDIR}"/usr/share/webapps/element/config.json
+}
