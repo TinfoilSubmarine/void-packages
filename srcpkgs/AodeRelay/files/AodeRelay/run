@@ -1,0 +1,15 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+export ADDR=${ADDR:-0.0.0.0}
+export PORT=${PORT:-8080}
+export DEBUG=${DEBUG:-false}
+export RESTRICTED_MODE=${RESTRICTED_MODE:-false}
+export VALIDATE_SIGNATURES=${VALIDATE_SIGNATURES:-true}
+export HTTPS=${HTTPS:-true}
+export PRETTY_LOG=${PRETTY_LOG:-false}
+export PUBLISH_BLOCKS=${PUBLISH_BLOCKS:-true}
+export SLED_PATH=${SLED_PATH:-/var/lib/AodeRelay/sled_db}
+export RUST_LOG=${RUST_LOG:-warn}
+
+ulimit -n ${MAX_OPEN_FILES:-65535}
+exec chpst -u _aoderelay:_aoderelay AodeRelay

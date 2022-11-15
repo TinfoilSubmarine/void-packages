@@ -1,0 +1,23 @@
+# Template file for 'AodeRelay'
+pkgname=AodeRelay
+version=0.3.82
+revision=1
+build_style=cargo
+hostmakedepends="protobuf pkg-config"
+makedepends="openssl-devel"
+short_desc="ActivityPub relay in Rust"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-or-later"
+homepage="https://git.asonix.dog/asonix/relay"
+distfiles="https://git.asonix.dog/asonix/relay/archive/v${version}.tar.gz"
+checksum=4c91652cf4b714a3a4bf72e0d4ad08a663bbbdedadc509639d4a10da804e424f
+
+system_accounts="_aoderelay"
+_AodeRelay_homedir="/var/lib/AodeRelay"
+make_dirs="/var/lib/AodeRelay 0700 _aoderelay _aoderelay"
+
+post_install() {
+	vsv AodeRelay
+	mv "${DESTDIR}"/usr/bin/{relay,AodeRelay}
+	vlicense LICENSE
+}
