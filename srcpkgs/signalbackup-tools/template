@@ -1,0 +1,21 @@
+# Template file for 'signalbackup-tools'
+pkgname=signalbackup-tools
+version=20230109
+revision=1
+_version_suffix="-1"
+hostmakedepends="which"
+makedepends="openssl-devel sqlite-devel"
+short_desc="Tool to work with Signal Backup files"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/bepaald/signalbackup-tools"
+distfiles="https://github.com/bepaald/signalbackup-tools/archive/refs/tags/${version}${_version_suffix}.tar.gz"
+checksum=8e78e2d13abe85e1fca990bd85bc7df8d7e9c0ca43bc14593eba409bbdae6ea0
+
+do_build() {
+	sh BUILDSCRIPT.sh
+}
+
+do_install() {
+	vbin signalbackup-tools
+}
