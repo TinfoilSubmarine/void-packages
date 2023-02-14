@@ -1,6 +1,6 @@
 # Template file for 'signalbackup-tools'
 pkgname=signalbackup-tools
-version=20230128
+version=20230214
 revision=1
 _version_suffix="-1"
 hostmakedepends="which"
@@ -10,7 +10,7 @@ maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/bepaald/signalbackup-tools"
 distfiles="https://github.com/bepaald/signalbackup-tools/archive/refs/tags/${version}${_version_suffix}.tar.gz"
-checksum=c0211f277647bde4298033c1dd82e5116a689dbf8558a5e6d3031baf3e3cec33
+checksum=a0cb9bd8a5cf8d596a7a43d2d60f6603f15a19f6edff0ba73ceb4a11c0914660
 
 do_build() {
 	sh BUILDSCRIPT.sh
