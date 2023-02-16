@@ -1,0 +1,19 @@
+# Template file for 'nmrpflash'
+pkgname=nmrpflash
+version=0.9.19
+revision=1
+build_style=gnu-makefile
+make_use_env=yes
+#make_build_args="-DNMRPFLASH_VERSION=\"${version}\""
+hostmakedepends="pkg-config"
+makedepends="libpcap-devel libnl-devel"
+short_desc="Netgear Unbrick Utility"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/jclehner/nmrpflash"
+distfiles="https://github.com/jclehner/nmrpflash/archive/refs/tags/v${version}.tar.gz"
+checksum=cb0757d4d38b5061d8a71ccb853f117675d3de3ec4aaa4e9179f614bbbfac31d
+
+do_install() {
+	vbin nmrpflash
+}
