@@ -9,7 +9,6 @@ makedepends="libglib-devel cairo-devel pango-devel libxkbcommon-devel
  libxcb-devel xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel
  startup-notification-devel wayland-protocols alsa-lib-devel"
 checkdepends="check-devel"
-depends="rofi>=${version%+*} bash which sed"
 short_desc="Window switcher, run dialog and dmenu replacement - Wayland"
 maintainer="Subhaditya Nath <sn03.general@gmail.com>"
 license="MIT"
