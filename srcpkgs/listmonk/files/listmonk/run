@@ -1,0 +1,23 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+exec 2>&1
+
+# run install if hasn't been run yet
+chpst -u _listmonk:_listmonk listmonk --install --idempotent --yes \
+	--config ${CONFIG_FILE:-/etc/listmonk/config.toml} \
+	--i18n-dir /usr/share/listmonk/i18n \
+	--static-dir /usr/share/listmonk/static \
+	${OPTS}
+
+# run any upgrades needed
+chpst -u _listmonk:_listmonk listmonk --upgrade --yes \
+	--config ${CONFIG_FILE:-/etc/listmonk/config.toml} \
+	--i18n-dir /usr/share/listmonk/i18n \
+	--static-dir /usr/share/listmonk/static \
+	${OPTS}
+
+exec chpst -u _listmonk:_listmonk listmonk \
+	--config ${CONFIG_FILE:-/etc/listmonk/config.toml} \
+	--i18n-dir /usr/share/listmonk/i18n \
+	--static-dir /usr/share/listmonk/static \
+	${OPTS}

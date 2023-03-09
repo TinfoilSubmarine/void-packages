@@ -1,0 +1,42 @@
+# Template file for 'listmonk'
+pkgname=listmonk
+version=2.3.0
+revision=1
+build_style=go
+go_import_path="github.com/knadh/listmonk"
+go_package="cmd/*.go"
+go_ldflags="-X 'main.versionString=${version}'
+	-X 'main.buildString=${version} (${SOURCE_DATE_EPOCH})'
+	-X 'main.appDir=/usr/share/listmonk'
+	-X 'main.frontendDir=/usr/share/listmonk/frontend'"
+hostmakedepends="yarn"
+short_desc="High performance, self-hosted, newsletter and mailing list manager"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-only"
+homepage="https://listmonk.app/"
+distfiles="https://github.com/knadh/listmonk/archive/refs/tags/v${version}.tar.gz"
+checksum=54cab80ca16dbf58ce40b7fc1ae88a9f8ed4c9d9a54387a77b1a90cb4dba3404
+system_accounts="_listmonk"
+make_dirs="/var/lib/listmonk 0700 _listmonk _listmonk"
+_listmonk_homedir="/var/lib/listmonk"
+conf_files="/etc/listmonk/config.toml"
+
+pre_build() {
+	make build-frontend
+}
+
+post_install() {
+	vinstall config.toml.sample 644 etc/listmonk config.toml
+	vsv listmonk
+	vlicense LICENSE
+
+	vinstall config.toml.sample 644 usr/share/listmonk
+	vinstall schema.sql 644 usr/share/listmonk
+	vinstall queries.sql 644 usr/share/listmonk
+	vcopy frontend/dist usr/share/listmonk/frontend
+	vcopy i18n usr/share/listmonk
+	vcopy static usr/share/listmonk
+
+	cd "${DESTDIR}"/usr/bin
+	mv admin listmonk
+}
