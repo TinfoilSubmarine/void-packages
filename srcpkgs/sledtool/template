@@ -1,0 +1,16 @@
+# Template file for 'sledtool'
+pkgname=sledtool
+version=0.1.2
+revision=1
+build_style=cargo
+short_desc="CLI tool to work with Sled key-value databases"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MIT"
+homepage="https://github.com/vi/sledtool"
+changelog="https://github.com/vi/sledtool/releases"
+distfiles="https://github.com/vi/sledtool/archive/refs/tags/v0.1.2.tar.gz"
+checksum=d91bdd15776d86e7fb899bde1956c0d6a5b723c797cff9a30f35f977a3167a05
+
+post_install() {
+	vlicense LICENSE
+}
