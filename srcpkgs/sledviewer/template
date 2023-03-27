@@ -1,0 +1,13 @@
+# Template file for 'sledviewer'
+pkgname=sledviewer
+version=99a85804069bba03f5118bb9a86debb5b14056a2
+revision=1
+build_style=cargo
+hostmakedepends="pkg-config cmake"
+makedepends="libX11-devel freetype-devel expat-devel"
+short_desc="GUI tool for sled databases"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="None"
+homepage="https://gitlab.com/timokoesters/sledviewer"
+distfiles="https://gitlab.com/timokoesters/sledviewer/-/archive/${version}/sledviewer-${version}.tar.gz"
+checksum=aae490ff7fc0da87a0bdc1364404bbc4602ae9644379e67a7f766abb210a9238
