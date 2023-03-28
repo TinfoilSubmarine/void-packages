@@ -1,0 +1,13 @@
+# Template file for 'constanze'
+pkgname=constanze
+version=0.0.1
+revision=1
+build_style=go
+go_import_path=constanze
+short_desc="CLI to tinker around with akkoma"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="None"
+homepage="https://akkoma.dev/AkkomaGang/constanze"
+changelog="https://akkoma.dev/AkkomaGang/constanze/releases"
+distfiles="https://akkoma.dev/AkkomaGang/constanze/archive/v${version}.tar.gz"
+checksum=d0ff412936a7c1ce6bf22a510f2e91df015a5ea043515656d0da1c32bf981f17
