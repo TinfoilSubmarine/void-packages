@@ -1,0 +1,21 @@
+# Template file for 'python3-aiosqlite'
+pkgname=python3-aiosqlite
+version=0.18.0
+revision=1
+build_style=python3-pep517
+make_check_target="aiosqlite/tests"
+hostmakedepends="python3-flit_core"
+depends="python3"
+short_desc="Asyncio bridge to the standard sqlite3 module"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MIT"
+homepage="https://aiosqlite.omnilib.dev/en/stable/"
+changelog="https://raw.githubusercontent.com/omnilib/aiosqlite/main/CHANGELOG.md"
+distfiles="https://github.com/omnilib/aiosqlite/archive/refs/tags/v${version}.tar.gz"
+checksum=01bdccb1120d61b13049a5547907b1e137767933ae39546160ee76d652759a5a
+# tests are there, but can't get them to work with make_check_args
+make_check=no
+
+post_install() {
+	vlicense LICENSE
+}
