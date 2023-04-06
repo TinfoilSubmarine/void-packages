@@ -1,0 +1,20 @@
+# Template file for 'pleroma-ebooks'
+pkgname=pleroma-ebooks
+version=03305c4a55715a8ae7d75971624b76d842e2c0c2
+revision=1
+build_style=python3-module
+hostmakedepends="python3-setuptools"
+depends="python3-BeautifulSoup4 python3-pleroma python3-aiohttp python3-json5
+ python3-anyio python3-aiosqlite python3-markovify python3-pendulum"
+checkdepends="$depends"
+short_desc="Markov chain bots for Pleroma"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-only,MPL-2.0"
+homepage="https://github.com/ioistired/pleroma-ebooks"
+distfiles="https://github.com/ioistired/pleroma-ebooks/archive/${version}.tar.gz"
+checksum=30cce9f5a2c417d63a550d678f3432303f19409e6820b363e348615c53e8b4db
+make_check=no # no tests included
+
+post_install() {
+	vlicense LICENSE-AGPL.md
+}

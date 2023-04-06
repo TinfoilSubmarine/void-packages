@@ -1,0 +1,59 @@
+diff --git a/pyproject.toml b/pyproject.toml
+new file mode 100644
+index 0000000..596d494
+--- /dev/null
++++ b/pyproject.toml
+@@ -0,0 +1,3 @@
++[build-system]
++requires = ["setuptools","wheel"]
++build-backend = 'setuptools.build_meta'
+diff --git a/setup.cfg b/setup.cfg
+new file mode 100644
+index 0000000..43a326f
+--- /dev/null
++++ b/setup.cfg
+@@ -0,0 +1,34 @@
++[metadata]
++name = pleroma-ebooks
++description = Markov chain bots for Pleroma
++long_description = file: README.md
++long_description_content_type = text/markdown; charset=UTF-8
++url = https://github.com/ioistired/pleroma-ebooks
++licenses = AGPL-3.0-only,MPL-2.0
++license_files = LICENSE-AGPL.md, LICENSE-MPL 
++classifiers =
++	Environment :: Console
++	License :: OSI Approved :: AGPLv3 License
++	Programming Language :: Python :: 3.6
++	Programming Language :: Python :: 3.7
++	Programming Language :: Python :: 3.8
++	Programming Language :: Python :: 3.9
++	Programming Language :: Python :: 3.10
++	Programming Language :: Python :: 3.11
++project_urls =
++	Source = https://github.com/ioistired/pleroma-ebooks
++	Tracker = https://github.com/ioistired/pleroma-ebooks/issues
++
++[options]
++zip_safe = False
++packages = find:
++install_requires =
++	beautifulsoup4 ~= 4.9
++	pleroma.py ~= 0.0.1
++	aiohttp ~= 3.0
++	json5 ~= 0.9.5
++	anyio ~= 3.0
++	aiosqlite ~= 0.18.0
++	pendulum ~= 2.0
++	markovify ~= 0.9.0
++python_requires = >=3.6
+diff --git a/setup.py b/setup.py
+new file mode 100644
+index 0000000..1abbd06
+--- /dev/null
++++ b/setup.py
+@@ -0,0 +1,4 @@
++import setuptools
++
++if __name__ == "__main__":
++    setuptools.setup()
