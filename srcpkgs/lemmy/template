@@ -1,0 +1,40 @@
+# Template file for 'lemmy'
+pkgname=lemmy
+version=0.19.2
+revision=1
+_translation_commit=e2cc2912dac3f74959a934ad66ec833a04e847ae
+build_style=cargo
+configure_args="--features=embed-pictrs"
+hostmakedepends="pkg-config protobuf"
+makedepends="openssl-devel libpqxx-devel libzstd-devel"
+depends="ImageMagick ffmpeg exiftool"
+short_desc="Link aggregator and forum for the fediverse"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-only"
+homepage="https://join-lemmy.org/"
+changelog="https://raw.githubusercontent.com/LemmyNet/lemmy/main/RELEASES.md"
+distfiles="https://github.com/LemmyNet/lemmy/archive/refs/tags/${version}.tar.gz
+ https://github.com/LemmyNet/lemmy-translations/archive/${_translation_commit}.tar.gz"
+checksum="c8bbe6779b975d87ddaa6fe6c48b6186fbf8489510d4dced26f7d06a493557bf
+ eaba92a30c4e40b8bf1e20766219bc4bdd03ab69e1b0b423c9b486ed59813216"
+system_accounts="_lemmy"
+make_dirs="/var/lib/lemmy 0700 _lemmy _lemmy"
+_lemmy_homedir="/var/lib/lemmy"
+conf_files="/etc/lemmy/lemmy.hjson"
+
+post_extract() {
+	cp -r lemmy-${version}/. .
+	cp -r lemmy-translations-${_translation_commit}/. crates/utils/translations
+	rm -rf lemmy-${version} lemmy-translations-${_translation_commit}
+}
+
+post_patch() {
+	vsed -i "s/unknown version/$version/" crates/utils/src/version.rs
+}
+
+post_install() {
+	vsconf config/defaults.hjson
+	vinstall config/config.hjson 644 etc/lemmy lemmy.hjson
+	vsv lemmy
+	vlicense LICENSE
+}
