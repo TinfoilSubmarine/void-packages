@@ -1,0 +1,58 @@
+# Template file for 'lemmy-ui'
+pkgname=lemmy-ui
+version=0.19.2
+revision=1
+_translation_commit=e2cc2912dac3f74959a934ad66ec833a04e847ae
+hostmakedepends="yarn pkg-config python3"
+makedepends="libvips-devel"
+depends="nodejs"
+short_desc="Official web app for lemmy"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-only"
+homepage="https://join-lemmy.org/"
+distfiles="https://github.com/LemmyNet/lemmy-ui/archive/refs/tags/${version}.tar.gz
+ https://github.com/LemmyNet/lemmy-translations/archive/${_translation_commit}.tar.gz"
+checksum="cbc0c9c0d3aa1fbafdd5a4e380efc115dc32998cc58b21c35fad9521fe70a053
+ eaba92a30c4e40b8bf1e20766219bc4bdd03ab69e1b0b423c9b486ed59813216"
+python_version=3
+system_accounts="_lemmyui"
+
+export NODE_ENV=production
+case "$XBPS_TARGET_MACHINE" in
+	aarch64*) export npm_config_arch=arm64;;
+	armv5*) export npm_config_arch=arm; export npm_config_arm_version=5;;
+	armv6*) export npm_config_arch=arm; export npm_config_arm_version=6;;
+	armv7*) export npm_config_arch=arm; export npm_config_arm_version=7;;
+	i686*) export npm_config_arch=ia32;;
+	x86_64*) export npm_config_arch=x64;;
+esac
+export npm_config_build_from_source=true
+if [ "$XBPS_TARGET_LIBC" = "musl" ]; then
+	export npm_config_libc=musl
+fi
+export npm_config_platform=linux
+
+post_extract() {
+	cp -r lemmy-ui-${version}/. .
+	cp -r lemmy-translations-${_translation_commit}/. lemmy-translations
+	rm -rf lemmy-${version} lemmy-translations-${_translation_commit}
+
+	yarn install --pure-lockfile
+}
+
+post_patch() {
+	vsed -i "s/unknown version/$version/" src/shared/version.ts
+}
+
+do_build() {
+	yarn build:prod
+}
+
+do_install() {
+	npm prune
+	vmkdir usr/lib/lemmy-ui
+	vcopy dist usr/lib/lemmy-ui
+	vcopy node_modules usr/lib/lemmy-ui
+	vlicense LICENSE
+	vsv lemmy-ui
+}
