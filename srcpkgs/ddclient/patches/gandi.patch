@@ -1,0 +1,246 @@
+commit 7533c2a88a45c44704fa748c04591732a0d57fb0
+Author: Joel Beckmeyer <joel@beckmeyer.us>
+Date:   Fri Nov 24 12:09:38 2023 -0500
+
+    gandi: fix nitpicks
+
+diff --git a/ddclient.in b/ddclient.in
+index baff7c5..e998eda 100755
+--- a/ddclient.in
++++ b/ddclient.in
+@@ -7378,8 +7378,8 @@ sub nic_gandi_update {
+             $headers .= "Authorization: Apikey $config{$h}{'password'}\n";
+ 
+ 
+-            my $rrset_type = is_ipv6($ip) ? "AAAA" : "A";
+-            my $ipv = is_ipv6($ip) ? "ipv6" : "ipv4";
++
++            my $rrset_type = $ipv eq 'ipv6' ? 'AAAA' : 'A';
+             my $url;
+             $url  = "https://$config{$h}{'server'}$config{$h}{'script'}";
+             $url .= "/livedns/domains/$config{$h}{'zone'}/records/$hostname/$rrset_type";
+@@ -7404,7 +7404,11 @@ sub nic_gandi_update {
+                 failed("%s -- Unexpected service response.", $h);
+                 next;
+             }
+-            if($response->{'rrset_values'}->[0] eq $ip) {
++            if($response->{'rrset_values'}->[0] eq $ip && !defined($config{$h}{'ttl'}) ||
++                $response->{'rrset_ttl'} eq $config{$h}{'ttl'}) {
++                $config{$h}{'ip'}     = $ip;
++                $config{$h}{'mtime'}  = $now;
++                $config{$h}{"status-$ipv"} = "good";
+                 success("updating %s: skipped: address was already set to %s.", $h, $ip);
+                 next;
+             }
+
+commit 8216ca9f078dae812627aa12b0dce8f3b8398284
+Author: Joel Beckmeyer <joel@beckmeyer.us>
+Date:   Wed Aug 2 19:49:39 2023 -0400
+
+    gandi: improve documentation
+
+diff --git a/ddclient.conf.in b/ddclient.conf.in
+index fb50ab3..69ddc47 100644
+--- a/ddclient.conf.in
++++ b/ddclient.conf.in
+@@ -197,10 +197,10 @@ ssl=yes					# use ssl-support.  Works with
+ ## Gandi (gandi.net)
+ ##
+ ## Single host update
+-# protocol=gandi,                      \
+-# zone=example.com,                    \
+-# password=my-gandi-api-key,           \
+-# ttl=3h                               \
++# protocol=gandi
++# zone=example.com
++# password=my-gandi-api-key
++# ttl=10800 # optional
+ # myhost.example.com
+ 
+ ##
+diff --git a/ddclient.in b/ddclient.in
+index db70248..baff7c5 100755
+--- a/ddclient.in
++++ b/ddclient.in
+@@ -7339,20 +7339,20 @@ Available configuration variables:
+     Required.
+   * zone: The DNS zone to be updated. Required.
+   * ttl: The time-to-live value associated with the updated DNS record.
+-    Optional; uses Gandi's default (3h) if unset.
++    Optional; uses Gandi's default (10800) if unset.
+ 
+ Example ${program}.conf file entries:
+   ## Single host update.
+-  protocol=gandi,                           \\
+-  zone=example.com,                         \\
+-  password=my-gandi-api-key,                \\
++  protocol=gandi
++  zone=example.com
++  password=my-gandi-api-key
+   host.example.com
+ 
+   ## Multiple host update.
+-  protocol=gandi,                           \\
+-  zone=example.com,                         \\
+-  password=my-gandi-api-key,                \\
+-  ttl=1h                                    \\
++  protocol=gandi
++  zone=example.com
++  password=my-gandi-api-key
++  ttl=3600 # optional
+   hosta.example.com,hostb.sub.example.com
+ EoEXAMPLE
+ }
+
+commit ea5cd1a9c5b1650166ff2551dc31c798f53b2ae0
+Author: Joel Beckmeyer <joel@beckmeyer.us>
+Date:   Mon Jul 31 23:06:39 2023 -0400
+
+    gandi: update logic
+    
+    - allow updating IPv6/AAAA
+    - allow updating A and AAAA records simultaneously
+    - skip updating if record already has same IP
+
+diff --git a/ddclient.in b/ddclient.in
+index c509aba..db70248 100755
+--- a/ddclient.in
++++ b/ddclient.in
+@@ -7362,68 +7362,87 @@ EoEXAMPLE
+ ######################################################################
+ sub nic_gandi_update {
+     debug("\nnic_gandi_update -------------------");
+-
+     # Update each set configured host.
+     foreach my $h (@_) {
+-        my $ip = delete $config{$h}{'wantip'};
+-        (my $hostname = $h) =~ s/\.\Q$config{$h}{zone}\E$//;
++        foreach my $ipv ('ipv4', 'ipv6') {
++            my $ip = delete $config{$h}{"want$ipv"};
++            if(!$ip) {
++                next;
++            }
++            (my $hostname = $h) =~ s/\.\Q$config{$h}{zone}\E$//;
++            info("%s -- Setting IP address to %s.", $h, $ip);
++            verbose("UPDATE:", "updating %s", $h);
+ 
+-        info("%s -- Setting IP address to %s.", $h, $ip);
+-        verbose("UPDATE:", "updating %s", $h);
++            my $headers;
++            $headers  = "Content-Type: application/json\n";
++            $headers .= "Authorization: Apikey $config{$h}{'password'}\n";
+ 
+-        my $headers;
+-        $headers  = "Content-Type: application/json\n";
+-        $headers .= "Authorization: Apikey $config{$h}{'password'}\n";
+ 
+-        my $data = encode_json({
+-            defined($config{$h}{'ttl'}) ? (rrset_ttl => $config{$h}{'ttl'}) : (),
+-            rrset_values => [$ip],
+-        });
+-
+-        my $rrset_type = is_ipv6($ip) ? "AAAA" : "A";
+-        my $url;
+-        $url  = "https://$config{$h}{'server'}$config{$h}{'script'}";
+-        $url .= "/livedns/domains/$config{$h}{'zone'}/records/$hostname/$rrset_type";
++            my $rrset_type = is_ipv6($ip) ? "AAAA" : "A";
++            my $ipv = is_ipv6($ip) ? "ipv6" : "ipv4";
++            my $url;
++            $url  = "https://$config{$h}{'server'}$config{$h}{'script'}";
++            $url .= "/livedns/domains/$config{$h}{'zone'}/records/$hostname/$rrset_type";
+ 
+-        my $reply = geturl(
+-            proxy    => opt('proxy'),
+-            url      => $url,
+-            headers  => $headers,
+-            method   => 'PUT',
+-            data     => $data,
+-        );
+-        unless ($reply) {
+-            failed("%s -- Could not connect to %s.", $h, $config{$h}{'server'});
+-            next;
+-        }
+-        my $ok = header_ok($h, $reply);
++            my $reply = geturl(
++                proxy    => opt('proxy'),
++                url      => $url,
++                headers  => $headers,
++                method   => 'GET'
++            );
++            unless ($reply) {
++                failed("%s -- Could not connect to %s.", $h, $config{$h}{'server'});
++                next;
++            }
++            my $ok = header_ok($h, $reply);
+ 
+-        $reply =~ s/^.*?\n\n//s;
+-        my $response = eval { decode_json($reply) };
+-        if (!defined($response)) {
+-            $config{$h}{'status'} = "bad";
++            $reply =~ s/^.*?\n\n//s;
++            my $response = eval { decode_json($reply) };
++            if (!defined($response)) {
++                $config{$h}{"status-$ipv"} = "bad";
+ 
+-            failed("%s -- Unexpected service response.", $h);
+-            next;
+-        }
++                failed("%s -- Unexpected service response.", $h);
++                next;
++            }
++            if($response->{'rrset_values'}->[0] eq $ip) {
++                success("updating %s: skipped: address was already set to %s.", $h, $ip);
++                next;
++            }
+ 
+-        if ($ok) {
+-            $config{$h}{'ip'}     = $ip;
+-            $config{$h}{'mtime'}  = $now;
+-            $config{$h}{'status'} = "good";
++            my $data = encode_json({
++                defined($config{$h}{'ttl'}) ? (rrset_ttl => $config{$h}{'ttl'}) : (),
++                rrset_values => [$ip],
++            });
++            $reply = geturl(
++                proxy    => opt('proxy'),
++                url      => $url,
++                headers  => $headers,
++                method   => 'PUT',
++                data     => $data,
++            );
++            unless ($reply) {
++                failed("%s -- Could not connect to %s.", $h, $config{$h}{'server'});
++                next;
++            }
++            $ok = header_ok($h, $reply);
++            if ($ok) {
++                $config{$h}{'ip'}     = $ip;
++                $config{$h}{'mtime'}  = $now;
++                $config{$h}{"status-$ipv"} = "good";
+ 
+-            success("%s -- Updated successfully to %s.", $h, $ip);
+-        } else {
+-            $config{$h}{'status'} = "bad";
++                success("%s -- Updated successfully to %s.", $h, $ip);
++            } else {
++                $config{$h}{"status-$ipv"} = "bad";
+ 
+-            if (defined($response->{status}) && $response->{status} eq "error") {
+-                my @errors;
+-                for my $err (@{$response->{errors}}) {
+-                    push(@errors, $err->{description});
++                if (defined($response->{status}) && $response->{status} eq "error") {
++                    my @errors;
++                    for my $err (@{$response->{errors}}) {
++                        push(@errors, $err->{description});
++                    }
++                    failed("%s -- %s.", $h, join(", ", @errors));
++                } else {
++                    failed("%s -- Unexpected service response.", $h);
+                 }
+-                failed("%s -- %s.", $h, join(", ", @errors));
+-            } else {
+-                failed("%s -- Unexpected service response.", $h);
+             }
+         }
+     }

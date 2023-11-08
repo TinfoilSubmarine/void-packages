@@ -1,0 +1,86 @@
+From 8726dd7a27377fc68846e19165d403fbe24f030b Mon Sep 17 00:00:00 2001
+From: Joel Beckmeyer <joel@beckmeyer.us>
+Date: Fri, 18 Aug 2023 10:00:20 -0400
+Subject: [PATCH] add mail-from option
+
+---
+ ddclient.conf.in |  1 +
+ ddclient.in      | 34 +++++++++++++++++++++++++---------
+ 2 files changed, 26 insertions(+), 9 deletions(-)
+
+diff --git a/ddclient.conf.in b/ddclient.conf.in
+index fb50ab33..8f3e3da3 100644
+--- a/ddclient.conf.in
++++ b/ddclient.conf.in
+@@ -20,6 +20,7 @@ daemon=300				# check every 300 seconds
+ syslog=yes				# log update msgs to syslog
+ mail=root				# mail all msgs to root
+ mail-failure=root		# mail failed update msgs to root
++# mail-from=root	# send mail from root, by default unset and handled by system sendmail
+ pid=@runstatedir@/ddclient.pid		# record PID in file.
+ ssl=yes					# use ssl-support.  Works with
+ 						# ssl-library
+diff --git a/ddclient.in b/ddclient.in
+index f852c5ea..ffb99dbf 100755
+--- a/ddclient.in
++++ b/ddclient.in
+@@ -459,6 +459,7 @@ my %variables = (
+         'priority'            => setv(T_STRING,0, 0, 'notice',             undef),
+         'mail'                => setv(T_EMAIL, 0, 0, '',                   undef),
+         'mail-failure'        => setv(T_EMAIL, 0, 0, '',                   undef),
++        'mail-from'           => setv(T_EMAIL, 0, 0, '',                   undef),
+         'max-warn'            => setv(T_NUMBER,0, 0, 1,                    undef),
+ 
+         'exec'                => setv(T_BOOL,  0, 0, 1,                    undef),
+@@ -1083,6 +1084,7 @@ my @opt = (
+     ["max-warn",          "=i", "-max-warn <max>       : log at most <max> warning messages for undefined IP address"],
+     ["mail",              "=s", "-mail <address>       : e-mail messages to <address>"],
+     ["mail-failure",      "=s", "-mail-failure <addr>  : e-mail messages for failed updates to <addr>"],
++    ["mail-from",         "=s", "-mail-from <addr>     : send status e-mail messages from <addr>"],
+     ["exec",              "!",  "-{no}exec             : do {not} execute; just show what would be done"],
+     ["debug",             "!",  "-{no}debug            : print {no} debugging information"],
+     ["verbose",           "!",  "-{no}verbose          : print {no} verbose information"],
+@@ -2191,20 +2193,34 @@ sub logger {
+ }
+ sub sendmail {
+     my $recipients = opt('mail');
++    my $sender = opt('mail-from');
+ 
+     if (opt('mail-failure') && ($result ne 'OK' && $result ne '0')) {
+         $recipients = opt('mail-failure');
+     }
+     if ($msgs && $recipients && $msgs ne $last_msgs) {
+-        pipecmd("sendmail -oi $recipients",
+-                "To: $recipients",
+-                "Subject: status report from $program\@$hostname",
+-                "\r\n",
+-                $msgs,
+-                "",
+-                "regards,",
+-                "   $program\@$hostname (version $version)"
+-        );
++        if ($sender) {
++            pipecmd("sendmail -oi $recipients",
++                    "To: $recipients",
++                    "From: $sender",
++                    "Subject: status report from $program\@$hostname",
++                    "\r\n",
++                    $msgs,
++                    "",
++                    "regards,",
++                    "   $program\@$hostname (version $version)"
++            );
++        } else {
++            pipecmd("sendmail -oi $recipients",
++                    "To: $recipients",
++                    "Subject: status report from $program\@$hostname",
++                    "\r\n",
++                    $msgs,
++                    "",
++                    "regards,",
++                    "   $program\@$hostname (version $version)"
++            );
++        }
+     }
+     $last_msgs = $msgs;
+     $msgs      = '';
