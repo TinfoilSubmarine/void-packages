@@ -1,9 +1,9 @@
 # Template file for 'kwallet'
 pkgname=kwallet
 version=5.115.0
-revision=1
+revision=2
 build_style=cmake
-configure_args="-DBUILD_TESTING=ON"
+configure_args="-DBUILD_TESTING=ON -DBUILD_KWALLET_QUERY=OFF"
 hostmakedepends="gettext kcoreaddons extra-cmake-modules
  qt5-host-tools qt5-qmake python3 kdoctools"
 makedepends="kdoctools-devel gpgmepp-devel libgcrypt-devel
