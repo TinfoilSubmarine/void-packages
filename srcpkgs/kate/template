@@ -1,8 +1,9 @@
-# Template file for 'kate5'
-pkgname=kate5
-version=24.02.0
+# Template file for 'kate'
+pkgname=kate
+version=24.02.2
 revision=1
 build_style=cmake
+build_helper=qemu
 configure_args="-DBUILD_TESTING=OFF -DKF6_HOST_TOOLING=/usr/lib/cmake"
 hostmakedepends="extra-cmake-modules pkg-config gettext qt6-tools qt6-base
  kf6-kconfig-devel kf6-kdoctools"
@@ -14,7 +15,8 @@ maintainer="John <me@johnnynator.dev>"
 license="GPL-3.0-or-later, LGPL-2.0-or-later, GPL-2.0-or-later"
 homepage="https://kde.org/applications/en/utilities/org.kde.kate"
 distfiles="${KDE_SITE}/release-service/${version}/src/${pkgname%5}-${version}.tar.xz"
-checksum=9b1efcccf4e36efcdbc2eada6399cd8128ce187a19182400313062f75ee35f48
+checksum=1ddacb0939831a43e2b9c1abd8d7e5afefe76789842333263655370e99f5434d
+replaces="kate5>=0"
 
 libkate_package() {
 	pkg_install() {
@@ -34,4 +36,10 @@ kwrite_package() {
 			vmove ${f#$DESTDIR}
 		done
 	}
+}
+
+kate5_package() {
+	short_desc+=" - (Dummy transitional package)"
+	build_style=meta
+	depends="kate-${version}_${revision}"
 }
