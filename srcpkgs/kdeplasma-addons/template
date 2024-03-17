@@ -3,8 +3,9 @@ pkgname=kdeplasma-addons
 version=6.0.4
 revision=1
 build_style=cmake
+build_helper=qemu
 configure_args="-DBUILD_TESTING=OFF -DKF6_HOST_TOOLING=/usr/lib/cmake"
-hostmakedepends="extra-cmake-modules qt6-tools pkg-config gettext"
+hostmakedepends="extra-cmake-modules qt6-base qt6-tools pkg-config gettext"
 makedepends="kf6-kdeclarative-devel kf6-kholidays-devel kf6-krunner-devel
  kf6-sonnet-devel kf6-kunitconversion-devel kf6-knewstuff-devel
  plasma5support-devel qt6-qt5compat-devel kf6-kio-devel
