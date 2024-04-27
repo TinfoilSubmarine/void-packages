@@ -1,0 +1,48 @@
+# Template file for 'papermc'
+pkgname=papermc
+version=1.20.4.496
+revision=1
+_reg_version=${version%.*}
+_build=${version##*.}
+build_style=gnu-makefile
+depends="bash gawk sed tmux nmap tar openjdk21-jre"
+short_desc="Minecraft server offering unrivaled performance and stability"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="GPL-3.0-or-later"
+homepage="https://papermc.io"
+changelog="https://papermc.io/downloads/paper"
+distfiles="https://github.com/Edenhofer/minecraft-server/archive/refs/tags/v1.0.4.tar.gz
+ https://api.papermc.io/v2/projects/paper/versions/${_reg_version}/builds/${_build}/downloads/paper-${_reg_version}-${_build}.jar>papermc.jar"
+checksum="55a9063d77e6fbb79b6e120c4a3faf78a129cc36b8874a895cc2261c3735130c
+ 9c6419c3504db84d437d4bbeb5b9d27d548a009a3ed2f1c617b62e7341cfeee3"
+skip_extraction="papermc.jar"
+
+system_accounts="_papermc"
+_papermc_shell="/bin/sh"
+_papermc_homedir="/var/lib/papermc"
+make_dirs="/var/lib/papermc 0755 _papermc _papermc"
+conf_files="/etc/default/papermc"
+
+post_extract() {
+	vsrccopy papermc.jar .
+}
+
+post_patch() {
+	vsed -i 's,/etc/conf.d,/etc/default,g' minecraftd.sh.in
+}
+
+do_build() {
+	make GAME=papermc \
+		INAME=papermc \
+		SERVER_ROOT=/var/lib/papermc \
+		BACKUP_PATHS="world world_nether world_the_end" \
+		GAME_USER=_papermc \
+		MAIN_EXECUTABLE=papermc.jar \
+		SERVER_START_CMD="/usr/lib/jvm/openjdk21/bin/java -Xms512M -Xmx1024M -jar /usr/share/java/papermc/papermc.jar nogui"
+}
+
+do_install() {
+	vinstall papermc.jar 644 usr/share/java/papermc
+	vinstall minecraftd.conf 644 etc/default papermc
+	vbin minecraftd.sh papermc
+}
