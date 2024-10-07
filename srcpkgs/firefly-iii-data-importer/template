@@ -1,6 +1,6 @@
 # Template file for 'firefly-iii-data-importer'
 pkgname=firefly-iii-data-importer
-version=1.5.3
+version=1.5.6
 revision=1
 wrksrc="data-importer-${version}"
 conf_files="/etc/webapps/firefly-iii-data-importer/data-importer.conf"
@@ -11,7 +11,7 @@ license="AGPL-3.0-or-later"
 homepage="https://github.com/firefly-iii/data-importer"
 changelog="https://raw.githubusercontent.com/firefly-iii/data-importer/main/changelog.md"
 distfiles="https://github.com/firefly-iii/data-importer/releases/download/v${version}/DataImporter-v${version}.tar.gz"
-checksum=edc6c8121962f9f1d724e3cccc368091a9befc28375acc68dfcf09abd608236f
+checksum=ef2ce825833968c837548b5caed8b1094f3db794d0a299a12b850ccde72e3d57
 make_dirs="/var/lib/firefly-iii-data-importer/storage/app/public 0750 _phpfpm _phpfpm
  /var/lib/firefly-iii-data-importer/storage/configurations 0750 _phpfpm _phpfpm
  /var/lib/firefly-iii-data-importer/storage/conversion-routines 0750 _phpfpm _phpfpm
