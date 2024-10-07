@@ -1,6 +1,6 @@
 # Template file for 'firefly-iii'
 pkgname=firefly-iii
-version=6.1.19
+version=6.1.21
 revision=1
 conf_files="/etc/webapps/firefly-iii/firefly-iii.conf"
 depends="php8.3 php8.3-intl php8.3-sodium php8.3-gd"
@@ -10,7 +10,7 @@ license="AGPL-3.0-or-later"
 homepage="https://github.com/firefly-iii/firefly-iii"
 changelog="https://raw.githubusercontent.com/firefly-iii/firefly-iii/main/changelog.md"
 distfiles="https://github.com/firefly-iii/firefly-iii/releases/download/v${version}/FireflyIII-v${version}.tar.gz"
-checksum=1fff6981f0c0978ee1edd1812810ee57b55f161c0aa685f9f15e17bcba57c22f
+checksum=99d170aeef1e268b28b152353c4d8303f01f9c1a521be0e1f739c8abf4199308
 make_dirs="/var/lib/firefly-iii/storage 0750 _phpfpm _phpfpm
  /var/lib/firefly-iii/storage/app/public 0750 _phpfpm _phpfpm
  /var/lib/firefly-iii/storage/build 0750 _phpfpm _phpfpm
