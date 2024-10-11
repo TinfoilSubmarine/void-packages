@@ -1,6 +1,6 @@
 # Template file for 'ddclient'
 pkgname=ddclient
-version=3.11.2
+version=3.11.99
 revision=1
 build_style=gnu-configure
 configure_args="--sysconfdir=/etc/ddclient"
@@ -13,8 +13,8 @@ maintainer="rogi <rogi@skylittlesystem.org>"
 license="GPL-2.0-or-later"
 homepage="https://github.com/ddclient/ddclient"
 changelog="https://raw.githubusercontent.com/ddclient/ddclient/master/ChangeLog.md"
-distfiles="https://github.com/ddclient/ddclient/archive/v${version}.tar.gz"
-checksum=243cd832abd3cdd2b49903e1b5ed7f450e2d9c4c0eaf8ce4fe692c244d3afd77
+distfiles="https://github.com/ddclient/ddclient/archive/1c0ba9a1260111f2eb75e76718d218ae2ee0b29f.tar.gz"
+checksum=107e0984aff759307574e28e943db12da92df82c2d5d4e38c2d5099641973a0c
 
 conf_files="/etc/ddclient/ddclient.conf"
 make_dirs="/var/cache/ddclient 0750 root root"
