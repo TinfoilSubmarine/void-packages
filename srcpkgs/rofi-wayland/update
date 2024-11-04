@@ -1,0 +1,2 @@
+site="https://github.com/lbonn/rofi/tags"
+pattern="(?<=archive/refs/tags/)\K[\d.]+\+wayland[\d]+(?=)"

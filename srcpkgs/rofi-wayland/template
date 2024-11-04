@@ -1,9 +1,7 @@
 # Template file for 'rofi-wayland'
 pkgname=rofi-wayland
-version=1.7.3
+version=1.7.5+wayland3
 revision=1
-_ver=${version}+wayland1
-wrksrc=rofi-${_ver}
 build_style=meson
 configure_args="-Dxcb=disabled -Dcheck=disabled"
 hostmakedepends="ninja flex bison glib-devel pkg-config wayland-devel"
@@ -14,8 +12,9 @@ short_desc="Window switcher, run dialog and dmenu replacement (Wayland fork)"
 maintainer="Omar Zeghouani <omarzeghouanii@gmail.com>"
 license="MIT"
 homepage="https://github.com/lbonn/rofi"
-distfiles="https://github.com/lbonn/rofi/releases/download/${_ver}/rofi-${_ver}.tar.gz"
-checksum=31d912f63403c6db9561f140a2a0e5673390a0fc75ad0be80b45e76b625bf37c
+changelog="https://github.com/lbonn/rofi/releases"
+distfiles="https://github.com/lbonn/rofi/releases/download/${version}/rofi-${version}.tar.gz"
+checksum=ddd66ce401bc30da8e502499bafb9ab2dbf1f8d62aeb9d41f32213394246ea59
 replaces="rofi>=0"
 
 post_install() {
