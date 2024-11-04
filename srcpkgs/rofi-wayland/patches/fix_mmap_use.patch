@@ -1,0 +1,27 @@
+From b04bedca44b34e276a75785bec2c42a83d7a79b7 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 4 May 2024 21:52:20 -0400
+Subject: [PATCH] wayland/display: Fix mmap use
+
+> From version 7 onwards, the fd must be mapped with MAP_PRIVATE by the recipient, as MAP_SHARED may fail.
+
+ - https://wayland.freedesktop.org/docs/html/apa.html#protocol-spec-wl_keyboard
+
+Signed-off-by: Samuel Dionne-Riel <samuel@dionne-riel.com>
+---
+ source/wayland/display.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/wayland/display.c b/source/wayland/display.c
+index ce7e7f9a9..e8c590424 100644
+--- a/source/wayland/display.c
++++ b/source/wayland/display.c
+@@ -347,7 +347,7 @@ static void wayland_keyboard_keymap(void *data, struct wl_keyboard *keyboard,
+     return;
+   }
+ 
+-  char *str = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
++  char *str = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+   if (str == MAP_FAILED) {
+     close(fd);
+     return;
