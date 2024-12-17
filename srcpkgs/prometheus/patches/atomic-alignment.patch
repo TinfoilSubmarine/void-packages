@@ -1,0 +1,22 @@
+commit bf80827f6fe4fda2f3f9f41234a3bb3b3cb72d2e
+Author: Joel Beckmeyer <joel@beckmeyer.us>
+Date:   Fri Dec 13 20:54:34 2024 -0500
+
+    fix alignment of atomic uint64 on 32-bit
+    
+    Signed-off-by: Joel Beckmeyer <joel@beckmeyer.us>
+
+diff --git a/util/testutil/context.go b/util/testutil/context.go
+index 0c9e0f6f6..ea4b0e374 100644
+--- a/util/testutil/context.go
++++ b/util/testutil/context.go
+@@ -49,8 +49,8 @@ func (c *MockContext) Value(interface{}) interface{} {
+ // MockContextErrAfter is a MockContext that will return an error after a certain
+ // number of calls to Err().
+ type MockContextErrAfter struct {
++	count atomic.Uint64
+ 	MockContext
+-	count     atomic.Uint64
+ 	FailAfter uint64
+ }
+ 

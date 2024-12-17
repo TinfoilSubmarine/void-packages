@@ -1,0 +1,21 @@
+commit 5935d82988b6f4d36ffc7eaf1a954d662d35e837
+Author: Joel Beckmeyer <joel@beckmeyer.us>
+Date:   Mon Dec 16 08:41:50 2024 -0500
+
+    fix TestDropOldTimeSeries on 32-bit
+    
+    Signed-off-by: Joel Beckmeyer <joel@beckmeyer.us>
+
+diff --git a/storage/remote/queue_manager_test.go b/storage/remote/queue_manager_test.go
+index 4b7c5a4e9..2dba17832 100644
+--- a/storage/remote/queue_manager_test.go
++++ b/storage/remote/queue_manager_test.go
+@@ -2073,7 +2073,7 @@ func createTimeseriesWithOldSamples(numSamples, numSeries int, extraLabels ...la
+ 		for j := 0; j < numSamples/2; j++ {
+ 			sample := record.RefSample{
+ 				Ref: chunks.HeadSeriesRef(i),
+-				T:   int64(int(time.Now().UnixMilli()) + j),
++				T:   time.Now().UnixMilli() + int64(j),
+ 				V:   float64(i),
+ 			}
+ 			samples = append(samples, sample)

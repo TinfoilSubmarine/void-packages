@@ -1,0 +1,27 @@
+commit 008f930f02eee3a8d55213ccede70ae7abbdaab4
+Author: Joel Beckmeyer <joel@beckmeyer.us>
+Date:   Fri Dec 6 15:57:35 2024 -0500
+
+    fix TestCuttingNewHeadChunks/really_large_histograms on 32-bit
+    
+    Signed-off-by: Joel Beckmeyer <joel@beckmeyer.us>
+
+diff --git a/model/histogram/test_utils.go b/model/histogram/test_utils.go
+index 9e9a711c2..e6b33863b 100644
+--- a/model/histogram/test_utils.go
++++ b/model/histogram/test_utils.go
+@@ -19,12 +19,12 @@ func GenerateBigTestHistograms(numHistograms, numBuckets int) []*Histogram {
+ 	bucketsPerSide := numBuckets / 2
+ 	spanLength := uint32(bucketsPerSide / numSpans)
+ 	// Given all bucket deltas are 1, sum bucketsPerSide + 1.
+-	observationCount := bucketsPerSide * (1 + bucketsPerSide)
++	observationCount := uint64(bucketsPerSide) * (1 + uint64(bucketsPerSide))
+ 
+ 	var histograms []*Histogram
+ 	for i := 0; i < numHistograms; i++ {
+ 		h := &Histogram{
+-			Count:           uint64(i + observationCount),
++			Count:           uint64(i) + observationCount,
+ 			ZeroCount:       uint64(i),
+ 			ZeroThreshold:   1e-128,
+ 			Sum:             18.4 * float64(i+1),
