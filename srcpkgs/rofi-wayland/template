@@ -1,6 +1,6 @@
 # Template file for 'rofi-wayland'
 pkgname=rofi-wayland
-version=1.7.5+wayland3
+version=1.7.7+wayland1
 revision=1
 build_style=meson
 configure_args="-Dxcb=disabled -Dcheck=disabled"
@@ -14,7 +14,7 @@ license="MIT"
 homepage="https://github.com/lbonn/rofi"
 changelog="https://github.com/lbonn/rofi/releases"
 distfiles="https://github.com/lbonn/rofi/releases/download/${version}/rofi-${version}.tar.gz"
-checksum=ddd66ce401bc30da8e502499bafb9ab2dbf1f8d62aeb9d41f32213394246ea59
+checksum=ef05c251c173172d58b90897c5dd3643da084963aaefff23c07bced7f325d5b7
 conflicts="rofi>0"
 
 post_install() {
