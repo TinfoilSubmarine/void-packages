@@ -1,0 +1,20 @@
+# Template file for 'python3-APScheduler'
+pkgname=python3-APScheduler
+version=3.11.2
+revision=1
+build_style=python3-pep517
+hostmakedepends="python3-setuptools_scm"
+depends="python3-tzlocal"
+checkdepends="${depends} python3-pytest python3-pytest-timeout python3-pytz
+ python3-tornado"
+short_desc="In-process task scheduler with Cron-like capabilities"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MIT"
+homepage="https://github.com/agronholm/apscheduler"
+changelog="https://github.com/agronholm/apscheduler/releases"
+distfiles="${PYPI_SITE}/a/apscheduler/apscheduler-${version}.tar.gz"
+checksum=2a9966b052ec805f020c8c4c3ae6e6a06e24b1bf19f2e11d91d8cca0473eef41
+
+post_install() {
+	vlicense LICENSE.txt
+}
