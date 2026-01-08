@@ -1,0 +1,19 @@
+# Template file for 'python3-Flask-Limiter'
+pkgname=python3-Flask-Limiter
+version=3.12
+revision=1
+build_style=python3-pep517
+hostmakedepends="hatch-vcs"
+depends="python3-Flask python3-limits python3-ordered-set python3-rich"
+short_desc="Rate limiting for flask applications"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MIT"
+homepage="https://flask-limiter.readthedocs.org/"
+changelog="https://raw.githubusercontent.com/alisaifee/flask-limiter/refs/heads/master/HISTORY.rst"
+distfiles="${PYPI_SITE}/f/flask_limiter/flask_limiter-${version}.tar.gz"
+checksum=f9e3e3d0c4acd0d1ffbfa729e17198dd1042f4d23c130ae160044fc930e21300
+make_check=no # requires unpackaged pymemcache and hiro
+
+post_install() {
+	vlicense LICENSE.txt
+}
