@@ -1,0 +1,23 @@
+# Template file for 'python3-netifaces-plus'
+pkgname=python3-netifaces-plus
+version=0.12.5
+revision=1
+build_style=python3-pep517
+hostmakedepends="python3-setuptools"
+makedepends="python3-devel"
+depends="python3"
+short_desc="Portable network interface information"
+maintainer="Joel <joel@beckmeyer.us>"
+license="MIT"
+homepage="https://github.com/tsukumijima/netifaces-plus"
+changelog="https://raw.githubusercontent.com/tsukumijima/netifaces-plus/refs/heads/master/CHANGELOG"
+distfiles="${PYPI_SITE}/n/netifaces_plus/netifaces_plus-${version}.tar.gz"
+checksum=6428bd7d4323556efd4b0ec6b315221875812f8cf2b69501c6fda7a09eb79528
+
+do_check() {
+	PYTHONPATH="$(cd build/lib* && pwd)" python3 test.py
+}
+
+post_install() {
+	vlicense LICENSE
+}
