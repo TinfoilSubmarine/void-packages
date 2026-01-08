@@ -1,0 +1,20 @@
+# Template file for 'python3-Wand'
+pkgname=python3-Wand
+version=0.6.13
+revision=1
+build_style=python3-module
+make_check_args="--skip-fft"
+hostmakedepends="python3-setuptools"
+depends="python3 ImageMagick ghostscript"
+checkdepends="$depends python3-pytest"
+short_desc="Ctypes-based simple MagickWand API binding"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MIT"
+homepage="http://wand-py.org/"
+changelog="https://raw.githubusercontent.com/emcconville/wand/refs/heads/master/docs/changes.rst"
+distfiles="${PYPI_SITE}/W/Wand/Wand-${version}.tar.gz"
+checksum=f5013484eaf7a20eb22d1821aaefe60b50cc329722372b5f8565d46d4aaafcca
+
+post_install() {
+	vlicense LICENSE
+}
