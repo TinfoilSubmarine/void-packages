@@ -1,0 +1,19 @@
+# Template file for 'python3-ordered-set'
+pkgname=python3-ordered-set
+version=4.1.0
+revision=1
+build_style=python3-pep517
+hostmakedepends="python3-flit_core"
+depends="python3"
+checkdepends="python3-pytest"
+short_desc="Mutable set that remembers the order of its entries"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="MIT"
+homepage="https://github.com/rspeer/ordered-set"
+changelog="https://raw.githubusercontent.com/rspeer/ordered-set/refs/heads/master/CHANGELOG.md"
+distfiles="${PYPI_SITE}/o/ordered-set/ordered-set-${version}.tar.gz"
+checksum=694a8e44c87657c59292ede72891eb91d34131f6531463aab3009191c77364a8
+
+post_install() {
+	vlicense MIT-LICENSE
+}
