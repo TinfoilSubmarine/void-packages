@@ -1,0 +1,21 @@
+# Template file for 'redlib'
+pkgname=redlib
+_commit=ba98178b
+version="0.36.0+${_commit}"
+revision=1
+build_style=cargo
+short_desc="Private front-end for Reddit"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="AGPL-3.0-only"
+homepage="https://github.com/redlib-org/redlib"
+changelog="https://github.com/redlib-org/redlib/releases"
+distfiles="https://github.com/redlib-org/redlib/archive/${_commit}.tar.gz"
+checksum=9507449cf836bdcfe62ab9b7addd03f265f4ef88b816450a427744569483ad08
+system_accounts="_redlib"
+conf_files="/etc/redlib.conf"
+
+post_install() {
+	vconf contrib/redlib.conf
+	vsv redlib
+	vlicense LICENSE
+}

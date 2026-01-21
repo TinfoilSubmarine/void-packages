@@ -1,0 +1,6 @@
+#!/bin/sh
+exec 2>&1
+set -o allexport
+[ -r /etc/redlib.conf ] && . /etc/redlib.conf
+set +o allexport
+exec chpst -u _redlib:_redlib redlib
