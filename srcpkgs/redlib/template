@@ -1,18 +1,18 @@
 # Template file for 'redlib'
 pkgname=redlib
-_commit=42fe41bc
+_commit=af002ab2
 version="0.36.0+${_commit}"
 revision=2
 build_style=cargo
-hostmakedepends="pkg-config"
-makedepends="openssl-devel"
+hostmakedepends="git cmake perl pkg-config clang"
+makedepends="libzstd-devel"
 short_desc="Private front-end for Reddit"
 maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
 license="AGPL-3.0-only"
 homepage="https://github.com/redlib-org/redlib"
 changelog="https://github.com/redlib-org/redlib/releases"
 distfiles="https://github.com/redlib-org/redlib/archive/${_commit}.tar.gz"
-checksum=18f8ff2e955b75b6c406f75009e45e93879dc947226b54913d9ca3fee2dd3093
+checksum=db85378793a7a80c486cec3a60fbda6850a7f6dabf8cc06e62c9faafe7789dc3
 system_accounts="_redlib"
 conf_files="/etc/redlib.conf"
 
