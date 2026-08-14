@@ -1,6 +1,6 @@
 # Template file for 'nextcloud'
 pkgname=nextcloud
-version=34.0.2
+version=34.0.3
 revision=1
 wrksrc="nextcloud"
 depends="php8.5 php8.5-gd"
@@ -10,7 +10,7 @@ license="AGPL-3.0-or-later"
 homepage="https://nextcloud.com"
 changelog="https://nextcloud.com/changelog/"
 distfiles="https://download.nextcloud.com/server/releases/nextcloud-${version}.tar.bz2"
-checksum=41ce31df12cc81090c3d07fe0e8b90bde61c92b18ae80e4d648bad43d7991101
+checksum=d7ed36ac0e14a2d9bbd167d6f6d4fc498f0f39fcccdf304e67e35bfc42e4506d
 
 conf_files="/etc/webapps/nextcloud/.htaccess
  /etc/webapps/nextcloud/config/CAN_INSTALL
