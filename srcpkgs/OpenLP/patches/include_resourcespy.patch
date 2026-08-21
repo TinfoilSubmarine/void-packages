@@ -1,0 +1,12 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 1c4acd3..7aaa57a 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -144,6 +144,7 @@ include = [
+ packages = [
+     "openlp",
+ ]
++artifacts = ["openlp/core/resources.py"]
+ 
+ [tool.hatch.envs.default]
+ dependencies = [
