@@ -12,6 +12,7 @@ homepage="https://github.com/firefly-iii/data-importer"
 changelog="https://raw.githubusercontent.com/firefly-iii/data-importer/main/changelog.md"
 distfiles="https://github.com/firefly-iii/data-importer/releases/download/v${version}/DataImporter-v${version}.tar.gz"
 checksum=7e7249cf1e2436f3491f76e9b2d1c71210b83b65bc5541731de6e2dccab149ff
+ignore_elf_dirs=/usr/share/webapps/firefly-iii-data-importer
 make_dirs="/var/lib/firefly-iii-data-importer/storage/app/public 0750 _phpfpm _phpfpm
  /var/lib/firefly-iii-data-importer/storage/configurations 0750 _phpfpm _phpfpm
  /var/lib/firefly-iii-data-importer/storage/conversion-routines 0750 _phpfpm _phpfpm
@@ -28,6 +29,11 @@ make_dirs="/var/lib/firefly-iii-data-importer/storage/app/public 0750 _phpfpm _p
  /var/cache/firefly-iii-data-importer 0750 _phpfpm _phpfpm"
 
 do_install() {
+	pushd vendor/phpstan/phpstan/turbo-ext
+	rm -rf linux-gnu-arm64 linux-musl-arm64 linux-musl-x86_64 macos-arm64 windows-x86_64
+	popd
+
+
 	rm -rf storage
 	vmkdir usr/share/webapps/firefly-iii-data-importer
 	vcopy . usr/share/webapps/firefly-iii-data-importer
